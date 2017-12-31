@@ -25,7 +25,7 @@ class SymFile:
 					self.vram.append(line)
 				elif highnibble in ("A","B"):
 					self.sram.append(line)
-				elif highnibble in ("C","D"):
+				elif highnibble in ("C","D") or line[3:7]=="E000": # edge case: XX:E000 is a valid WRAM label
 					self.wram.append(line)
 				else:
 					self.misc.append(line)
