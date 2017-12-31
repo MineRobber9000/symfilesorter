@@ -14,15 +14,16 @@ class SymFile:
 					continue
 				if line.startswith(";"):
 					continue
-				highnibble=line[3]
-				bank = int(line[0:2],16)
+				parts = line.split(" ")[0].split(":")
+				bank = int(parts[0],16)
+				highnibble = parts[0]
 				if highnibble in ("0","1","2","3","4","5","6","7"):
 					if bank in self.rom:
 						self.rom[bank].append(line)
 					else:
 						self.rom[bank]=[line]
 				elif highnibble in ("8","9"):
-					if bank>1:
+					if bank>1: # edge case: if bank>1, bank:8000 is a ROM label
 						if bank in self.rom:
 							self.rom[bank].append(line)
 						else:
@@ -31,8 +32,11 @@ class SymFile:
 						self.vram.append(line)
 				elif highnibble in ("A","B"):
 					self.sram.append(line)
-				elif highnibble in ("C","D") or line[3:7]=="E000": # edge case: XX:E000 is a valid WRAM label
-					self.wram.append(line)
+				elif highnibble in ("C","D") or parts[1]=="E000": # edge cases: XX:E000 is a valid WRAM label; for bank>1, bank:C000 is a valid sram label
+					if bank>1 and parts[1]=="C000":
+						self.sram.append(line)
+					else:
+						self.wram.append(line)
 				else:
 					self.misc.append(line)
 		for k in self.rom:
