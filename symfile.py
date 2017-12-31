@@ -22,7 +22,13 @@ class SymFile:
 					else:
 						self.rom[bank]=[line]
 				elif highnibble in ("8","9"):
-					self.vram.append(line)
+					if bank>1:
+						if bank in self.rom:
+							self.rom[bank].append(line)
+						else:
+							self.rom[bank]=[line]
+					else:
+						self.vram.append(line)
 				elif highnibble in ("A","B"):
 					self.sram.append(line)
 				elif highnibble in ("C","D") or line[3:7]=="E000": # edge case: XX:E000 is a valid WRAM label
